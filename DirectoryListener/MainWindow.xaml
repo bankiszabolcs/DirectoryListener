@@ -1,0 +1,29 @@
+﻿<Window x:Class="DirectoryListener.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DirectoryListener"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="450">
+    <StackPanel>
+        <Label Content="Fájl monitorozó" HorizontalAlignment="Center" FontWeight="Bold"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBox Name="fileURL" Width="350" HorizontalAlignment="Center" Margin="5,5,5,5"></TextBox>
+            <Button Content="Tallózás" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" Margin="5,5,5,5"/>
+        </StackPanel>
+        <StackPanel>
+            <TextBlock Name="FileContent" HorizontalAlignment="Center" >Válaszd ki mely formátumú fájlokat szeretnék megfigyelni.</TextBlock>
+            <StackPanel Name="cbContainer" Orientation="Horizontal" HorizontalAlignment="Center">
+                <CheckBox Name="allExt" IsThreeState="True" Checked="cbAllCheckedChanged" Unchecked="cbAllCheckedChanged" Padding="4,-1,5,0">All</CheckBox>
+                <CheckBox Name="txtExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.txt</CheckBox>
+                <CheckBox Name="jpgExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.jpg</CheckBox>
+                <CheckBox Name="pdfExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.pdf</CheckBox>
+                <CheckBox Name="docExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged"  Padding="4,-1,5,0">.docx</CheckBox>
+            </StackPanel>
+            <Button Content="Figyelés megkezdése" Width="50" Margin="0,10,0,0" Click="StartMonitor"/>
+
+        </StackPanel>
+
+    </StackPanel>
+</Window>
