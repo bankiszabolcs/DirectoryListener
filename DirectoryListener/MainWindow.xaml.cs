@@ -1,31 +1,12 @@
-﻿//using Microsoft.Win32;
-using System;
-//using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-//using System.Diagnostics.Eventing.Reader;
 using System.IO;
-//using System.Linq;
-//using System.Runtime.CompilerServices;
-//using System.Text;
-//using System.Text.RegularExpressions;
-//using System.Threading;
-//using System.Threading.Tasks;
 using System.Windows;
-//using System.Windows.Controls;
-//using System.Windows.Data;
-//using System.Windows.Documents;
 using System.Windows.Forms;
-//using System.Windows.Input;
-//using System.Windows.Media;
-//using System.Windows.Media.Imaging;
-//using System.Windows.Navigation;
-//using System.Windows.Shapes;
-using Application = System.Windows.Application;
+using System.Windows.Interop;
 using CheckBox = System.Windows.Controls.CheckBox;
 using MessageBox = System.Windows.Forms.MessageBox;
-//using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 
 namespace DirectoryListener
 {
@@ -34,19 +15,19 @@ namespace DirectoryListener
     /// </summary>
     public partial class MainWindow : Window
     {
+        private FileWatchManager fileWatcher;
         List<string> extensions = new List<string>();
         List<CheckBox> checkBoxes = new List<CheckBox>();
-        static ObservableCollection<Log> logCollection = new ObservableCollection<Log>();
         string dirPath;
-        bool isObserving = false;
-        FileSystemWatcher watcher;
 
         public MainWindow()
         {
             InitializeComponent();
             LoadCheckBoxes();
+            var logCollection = FileWatchManager.logCollection;
             logContainer.ItemsSource = logCollection;
             logCollection.CollectionChanged += LogCollection_CollectionChanged;
+            fileWatcher = new FileWatchManager();
         }
 
         private void LogCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -58,42 +39,17 @@ namespace DirectoryListener
             }
         }
 
-        private void WatchFile(string url, string format)
-        {
-            watcher = new FileSystemWatcher(url);
-
-            watcher.NotifyFilter = NotifyFilters.Attributes
-                                 | NotifyFilters.CreationTime
-                                 | NotifyFilters.DirectoryName
-                                 | NotifyFilters.FileName
-                                 | NotifyFilters.LastAccess
-                                 | NotifyFilters.LastWrite
-                                 | NotifyFilters.Security
-                                 | NotifyFilters.Size;
-
-            watcher.Changed += OnChanged;
-            watcher.Created += OnCreated;
-            watcher.Deleted += OnDeleted;
-            watcher.Renamed += OnRenamed;
-            watcher.Error += OnError;
-
-            watcher.Filter = $"*{format}";
-            watcher.IncludeSubdirectories = true;
-            watcher.EnableRaisingEvents = true;
-            isObserving = true;
-        }
-
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            BrowseDir();
+            //BrowseDir();
+            dirPath = BrowseDir("Válaszd ki azt a mappát, ahol meg szeretnél figyelni egy fájlt.");
+            fileURL.Text = dirPath;
         }
 
-        private void BrowseDir()
+        private string BrowseDir(string description)
         {
             FolderBrowserDialog folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            folderBrowserDialog1.Description =
-            "Válaszd ki azt a mappát, ahol meg szeretnél figyelni egy fájlt.";
+            folderBrowserDialog1.Description = description;
 
             folderBrowserDialog1.ShowNewFolderButton = false;
 
@@ -101,10 +57,11 @@ namespace DirectoryListener
 
             if (result == System.Windows.Forms.DialogResult.OK) // Test result.
             {
-                dirPath = folderBrowserDialog1.SelectedPath;
+                return folderBrowserDialog1.SelectedPath;
 
-                fileURL.Text = dirPath;
+                //fileURL.Text = dirPath;
             }
+            return null;
         }
 
         private void LoadCheckBoxes()
@@ -156,99 +113,52 @@ namespace DirectoryListener
             }
         }
 
-        private static void OnChanged(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                return;
-            }
-            Console.WriteLine($"Changed: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Changed, e.Name, Environment.UserName);
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                logCollection.Add(actualLog);
-            });
-
-            
-        }
-
-        private static void OnCreated(object sender, FileSystemEventArgs e)
-        {
-            string value = $"Created: {e.FullPath}";
-            Console.WriteLine(value);
-            Log actualLog = new Log(Log.EventType.Created, e.Name, Environment.UserName);
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                logCollection.Add(actualLog);
-            });
-        }
-
-        private static void OnDeleted(object sender, FileSystemEventArgs e){
-            Console.WriteLine($"Deleted: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Deleted, e.Name, Environment.UserName);
-            Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
-       }
-
-        private static void OnRenamed(object sender, RenamedEventArgs e)
-        {
-            Console.WriteLine($"Renamed:");
-            Console.WriteLine($"    Old: {e.OldFullPath}");
-            Console.WriteLine($"    New: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Renamed, $"{e.OldName} -> {e.Name}", Environment.UserName);
-            Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
-        }
-
-        private static void OnError(object sender, ErrorEventArgs e) =>
-            PrintException(e.GetException());
-
-        private static void PrintException(Exception ex)
-        {
-            if (ex != null)
-            {
-                Console.WriteLine($"Message: {ex.Message}");
-                Console.WriteLine("Stacktrace:");
-                Console.WriteLine(ex.StackTrace);
-                Console.WriteLine();
-                MessageBox.Show(ex.Message, "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                PrintException(ex.InnerException);
-            }
-        }
-
         private void StartMonitor(object sender, RoutedEventArgs e)
         {
             if(!String.IsNullOrEmpty(dirPath))
-            { 
+            {
                 foreach (var ext in extensions)
                 {
-                WatchFile(dirPath, ext);
+                    fileWatcher.WatchFile(dirPath, ext);
                 }
-                if (isObserving)
-                {
-                    Spinner.Visibility = Visibility.Visible;
-                    startButton.IsEnabled = false;
-                    stopButton.IsEnabled = true;
-                    //Csak akkor ha sikeres.
-                }
+           
+                Spinner.Visibility = Visibility.Visible;
+                startButton.IsEnabled = false;
+                stopButton.IsEnabled = true;
+            
             }
             else
             {
                 MessageBox.Show("Válassz ki egy mappát, ahol meg akarod figyelni a fájlokat", "Nincs mappa kijelölve", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                BrowseDir();
+                BrowseDir("Válaszd ki azt a mappát, ahol meg szeretnél figyelni egy fájlt.");
             }
         }
 
         private void StopMonitor(object sender, RoutedEventArgs e)
         {
-            isObserving = false;
             Spinner.Visibility = Visibility.Hidden;
             startButton.IsEnabled = true;
-            watcher.EnableRaisingEvents = false;
+            stopButton.IsEnabled = false;
+            //FileWatchManager.watcher.EnableRaisingEvents = false;
+       
+            fileWatcher.StopMonitor();
+            fileWatcher = null; // Set it to null to indicate it's no longer active
+            
         }
 
-        private void Logger()
+        private void SaveLog_Click(object sender, RoutedEventArgs e)
         {
 
+            try
+            {
+                string urlToSave = BrowseDir("Válaszd ki hova szeretnéd menteni a naplófájlt");
+                File.WriteAllLines($"{urlToSave}\\activities.txt", FileWatchManager.activitiesLog);
+                MessageBox.Show("Sikeres mentés", "Naplózás", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }  
         }
     }
 }

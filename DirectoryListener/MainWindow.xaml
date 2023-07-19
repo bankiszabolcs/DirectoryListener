@@ -6,8 +6,8 @@
         xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:DirectoryListener"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="450">
-    <StackPanel Margin="0,0,0,4">
+        Title="MainWindow" Height="500" Width="450">
+    <StackPanel Margin="0,0,0,40">
         <Label Content="Fájl monitorozó" HorizontalAlignment="Center" FontWeight="Bold"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="fileURL" Width="350" HorizontalAlignment="Center" Margin="5,5,5,5"></TextBox>
@@ -37,8 +37,8 @@
                 <Button Name="startButton" Content="Figyelés megkezdése" Width="130" Margin="10,10,10,10" Click="StartMonitor" Background="#FF12616B" Foreground="White"/>
                 <Button Name="stopButton" Content="Figyelés befejezése" Width="130" Margin="10,10,10,10" Click="StopMonitor" Foreground="White" Background="#FF12616B" IsEnabled="False"/>
             </StackPanel>
-            <fa:ImageAwesome Name="Spinner" Visibility="Hidden" Spin="True" Icon="Search" Height="48" Width="48" Margin="0,14,0,0" Foreground="#FF12616B" />
         </StackPanel>
+        <fa:ImageAwesome x:Name="Spinner" Visibility="Hidden" Spin="True" Icon="Search" Height="30" Width="30" Foreground="#FF12616B" />
         <ListBox Name="logContainer" Height="170" Width="400" VerticalAlignment="Center" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -58,8 +58,8 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
-            <Button Content="Mentés fájlba" Width="130" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" VerticalAlignment="Center"/>
-            <Button Content="Küldés szerverre" Width="130" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" />
+            <Button Content="Naplózás mentése" Width="140" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" VerticalAlignment="Center" Click="SaveLog_Click"/>
+            <Button Content="Fájlok küldése szerverre" Width="140" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" />
         </StackPanel>
     </StackPanel>
 </Window>
