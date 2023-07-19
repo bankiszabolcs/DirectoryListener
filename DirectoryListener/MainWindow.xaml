@@ -3,27 +3,63 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         xmlns:local="clr-namespace:DirectoryListener"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="450">
-    <StackPanel>
+    <StackPanel Margin="0,0,0,4">
         <Label Content="Fájl monitorozó" HorizontalAlignment="Center" FontWeight="Bold"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="fileURL" Width="350" HorizontalAlignment="Center" Margin="5,5,5,5"></TextBox>
-            <Button Content="Tallózás" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" Margin="5,5,5,5"/>
+            <Button Name="browseDir" Content="Tallózás" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" Margin="5,5,5,5"/>
         </StackPanel>
-        <StackPanel>
-            <TextBlock Name="FileContent" HorizontalAlignment="Center" >Válaszd ki mely formátumú fájlokat szeretnék megfigyelni.</TextBlock>
-            <StackPanel Name="cbContainer" Orientation="Horizontal" HorizontalAlignment="Center">
-                <CheckBox Name="allExt" IsThreeState="True" Checked="cbAllCheckedChanged" Unchecked="cbAllCheckedChanged" Padding="4,-1,5,0">All</CheckBox>
+        <StackPanel Width="400">
+            <TextBlock Name="FileContent" HorizontalAlignment="Center" Margin="0,0,0,6" >Válaszd ki mely formátumú fájlokat szeretnék megfigyelni.</TextBlock>
+            <StackPanel Name="cbContainer" Orientation="Horizontal" Width="350">
+                <CheckBox Name="allExt" IsThreeState="True" Checked="cbAllCheckedChanged" Unchecked="cbAllCheckedChanged" Padding="4,-1,5,0">Összes</CheckBox>
                 <CheckBox Name="txtExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.txt</CheckBox>
                 <CheckBox Name="jpgExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.jpg</CheckBox>
+                <CheckBox Name="jpegExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.jpeg</CheckBox>
                 <CheckBox Name="pdfExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.pdf</CheckBox>
-                <CheckBox Name="docExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged"  Padding="4,-1,5,0">.docx</CheckBox>
+                <CheckBox Name="docXExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged"  Padding="4,-1,5,0">.docx</CheckBox>
+                <CheckBox Name="docExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.doc</CheckBox>
             </StackPanel>
-            <Button Content="Figyelés megkezdése" Width="50" Margin="0,10,0,0" Click="StartMonitor"/>
-
+            <StackPanel Name="cbContainer2" Orientation="Horizontal" HorizontalAlignment="Center" Width="350" Margin="0,5,0,0">
+                <CheckBox Name="pptExt" IsThreeState="True" Checked="cbAllCheckedChanged" Unchecked="cbAllCheckedChanged" Padding="4,-1,5,0">.ppt</CheckBox>
+                <CheckBox Name="pptXExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.pptx</CheckBox>
+                <CheckBox Name="xlsExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.xls</CheckBox>
+                <CheckBox Name="xlsxExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.xlsx</CheckBox>
+                <CheckBox Name="htmlExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.html</CheckBox>
+                <CheckBox Name="htmExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged"  Padding="4,-1,5,0">.htm</CheckBox>
+                <CheckBox Name="pngExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.png</CheckBox>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Name="startButton" Content="Figyelés megkezdése" Width="130" Margin="10,10,10,10" Click="StartMonitor" Background="#FF12616B" Foreground="White"/>
+                <Button Name="stopButton" Content="Figyelés befejezése" Width="130" Margin="10,10,10,10" Click="StopMonitor" Foreground="White" Background="#FF12616B" IsEnabled="False"/>
+            </StackPanel>
+            <fa:ImageAwesome Name="Spinner" Visibility="Hidden" Spin="True" Icon="Search" Height="48" Width="48" Margin="0,14,0,0" Foreground="#FF12616B" />
         </StackPanel>
-
+        <ListBox Name="logContainer" Height="170" Width="400" VerticalAlignment="Center" HorizontalContentAlignment="Stretch">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{Binding FileEvent}"></TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding Url}"></TextBlock>
+                        <TextBlock Grid.Column="2" Text="{Binding User}"></TextBlock>
+                        <TextBlock Grid.Column="3" Text="{Binding EventTime}"></TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
+            <Button Content="Mentés fájlba" Width="130" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" VerticalAlignment="Center"/>
+            <Button Content="Küldés szerverre" Width="130" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" />
+        </StackPanel>
     </StackPanel>
 </Window>
