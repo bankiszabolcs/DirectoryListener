@@ -4,14 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:converters="clr-namespace:System.Windows;assembly=PresentationFramework"
         xmlns:local="clr-namespace:DirectoryListener"
         mc:Ignorable="d"
-        Title="MainWindow" Height="500" Width="450">
-    <StackPanel Margin="0,0,0,40">
+        Title="MainWindow" Height="450" Width="450">
+    <StackPanel>
         <Label Content="Fájl monitorozó" HorizontalAlignment="Center" FontWeight="Bold"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <TextBox Name="fileURL" Width="350" HorizontalAlignment="Center" Margin="5,5,5,5"></TextBox>
-            <Button Name="browseDir" Content="Tallózás" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" Margin="5,5,5,5"/>
+            <Button Name="browseDir" Style="{StaticResource CustomButtonStyle}"  Content="Tallózás" Width="50" HorizontalAlignment="Center" VerticalAlignment="Center" Click="Button_Click" Margin="5,5,5,5" Height="20"/>
         </StackPanel>
         <StackPanel Width="400">
             <TextBlock Name="FileContent" HorizontalAlignment="Center" Margin="0,0,0,6" >Válaszd ki mely formátumú fájlokat szeretnék megfigyelni.</TextBlock>
@@ -34,12 +35,12 @@
                 <CheckBox Name="pngExt" Checked="cbSingleCheckedChanged" Unchecked="cbSingleCheckedChanged" Padding="4,-1,5,0">.png</CheckBox>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Name="startButton" Content="Figyelés megkezdése" Width="130" Margin="10,10,10,10" Click="StartMonitor" Background="#FF12616B" Foreground="White"/>
-                <Button Name="stopButton" Content="Figyelés befejezése" Width="130" Margin="10,10,10,10" Click="StopMonitor" Foreground="White" Background="#FF12616B" IsEnabled="False"/>
+                <Button x:Name="startButton" Content="Figyelés megkezdése" Width="130" Height="20"  Style="{StaticResource CustomButtonStyle}"  Click="StartMonitor" Margin="10,12,10,10" />
+                <Button x:Name="stopButton" Content="Figyelés befejezése" Width="130" Height="20"  Style="{StaticResource CustomButtonStyle}"  Click="StopMonitor" Margin="10,12,10,10"  IsEnabled="False"/>
             </StackPanel>
         </StackPanel>
         <fa:ImageAwesome x:Name="Spinner" Visibility="Hidden" Spin="True" Icon="Search" Height="30" Width="30" Foreground="#FF12616B" />
-        <ListBox Name="logContainer" Height="170" Width="400" VerticalAlignment="Center" HorizontalContentAlignment="Stretch">
+        <ListBox Name="logContainer" Height="180" Width="400" VerticalAlignment="Center" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="2">
@@ -48,18 +49,18 @@
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
                             <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="auto"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding FileEvent}"></TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding Url}"></TextBlock>
                         <TextBlock Grid.Column="2" Text="{Binding User}"></TextBlock>
                         <TextBlock Grid.Column="3" Text="{Binding EventTime}"></TextBlock>
+                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikeres" Grid.Column="4" Visibility="{Binding IsIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Check" Height="15" Width="15" Foreground="#FF008E30" IsEnabled="True" Margin="5,0,0,0" />
+                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikertelen" Grid.Column="4"  Visibility="{Binding !IsIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Ban" Height="15" Width="15" Foreground="#FF8C0202" Margin="5,0,0,0"  />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" >
-            <Button Content="Naplózás mentése" Width="140" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" VerticalAlignment="Center" Click="SaveLog_Click"/>
-            <Button Content="Fájlok küldése szerverre" Width="140" Margin="10,10,10,10" Background="#FF12616B" Foreground="White" />
-        </StackPanel>
+        <Button Content="Naplózás mentése" Style="{StaticResource CustomButtonStyle}"  Width="140" Margin="10,15,10,3" Background="#FF12616B" Foreground="White" VerticalAlignment="Center" Click="SaveLog_Click" Height="20"/>
     </StackPanel>
 </Window>

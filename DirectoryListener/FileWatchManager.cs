@@ -17,9 +17,10 @@ namespace DirectoryListener
     internal class FileWatchManager
     {
         public FileSystemWatcher watcher;
-        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>();
+        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true), new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
         public static List<string> activitiesLog = new List<string>();
         string API_URL = "https://localhost:5000/files";
+
         public void WatchFile(string url, string format)
         {
             watcher = new FileSystemWatcher(url);
@@ -50,10 +51,10 @@ namespace DirectoryListener
                 return;
             }
             Console.WriteLine($"Changed: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Changed, e.Name, e.FullPath, Environment.UserName);
-            activitiesLog.Add($"Changed: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}");
-            string result = await SendFileAsJsonAsync(e.FullPath, API_URL);
+            string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
             Console.WriteLine(result);
+            Log actualLog = new Log(Log.EventType.Changed, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
+            activitiesLog.Add($"Changed: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}");
             Application.Current.Dispatcher.Invoke(() =>
             {
                logCollection.Add(actualLog);
@@ -62,11 +63,13 @@ namespace DirectoryListener
 
         }
 
-        private void OnCreated(object sender, FileSystemEventArgs e)
+        private async void OnCreated(object sender, FileSystemEventArgs e)
         {
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
-            Log actualLog = new Log(Log.EventType.Created, e.Name, e.FullPath, Environment.UserName);
+            string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
+            Console.WriteLine(result);
+            Log actualLog = new Log(Log.EventType.Created, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
             activitiesLog.Add($"Created: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime.ToString()}");
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -74,20 +77,24 @@ namespace DirectoryListener
             });
         }
 
-        private void OnDeleted(object sender, FileSystemEventArgs e)
+        private async void OnDeleted(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine($"Deleted: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Deleted, e.Name, e.FullPath, Environment.UserName);
+            string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
+            Console.WriteLine(result);
+            Log actualLog = new Log(Log.EventType.Deleted, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
             activitiesLog.Add($"Deleted: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}");
             Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
         }
 
-        private void OnRenamed(object sender, RenamedEventArgs e)
+        private async void OnRenamed(object sender, RenamedEventArgs e)
         {
             Console.WriteLine($"Renamed:");
             Console.WriteLine($"    Old: {e.OldFullPath}");
             Console.WriteLine($"    New: {e.FullPath}");
-            Log actualLog = new Log(Log.EventType.Renamed, e.Name, e.FullPath, Environment.UserName);
+            string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
+            Console.WriteLine(result);
+            Log actualLog = new Log(Log.EventType.Renamed, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
             activitiesLog.Add($"Renamed: {e.OldFullPath} was renamed to {e.FullPath} by {actualLog.User} on {actualLog.EventTime}");
             Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
         }
@@ -111,7 +118,7 @@ namespace DirectoryListener
             {
                 watcher.EnableRaisingEvents = false;
                 watcher.Dispose();
-                watcher = null; // Set it to null to indicate it's no longer active
+                watcher = null;
             }
 
         }
@@ -122,59 +129,46 @@ namespace DirectoryListener
             public string Bytes { get; set; }
         }
 
-        public async Task<string> SendFileAsJsonAsync(string filePath, string apiUrl)
+        public async Task<string> SendFileAsJsonAsync(string filePath, string name, string apiUrl)
         {
             try
             {
-                // Read the file data as a byte array
                 byte[] fileBytes = File.ReadAllBytes(filePath);
 
-                // Convert the byte array to a Base64-encoded string
                 string fileDataAsBase64 = Convert.ToBase64String(fileBytes);
 
-                // Create the FileAttachment instance with the file data
                 FileAttachment fileAttachment = new FileAttachment
                 {
-                    Name = Path.GetFileName(filePath),
+                    Name = name,
                     Bytes = fileDataAsBase64
                 };
 
-                // Create an HttpClient instance
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    // Set the content type header to indicate JSON data
                     httpClient.DefaultRequestHeaders.Accept.Clear();
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // Serialize the FileAttachment instance to JSON
                     string jsonPayloadString = Newtonsoft.Json.JsonConvert.SerializeObject(fileAttachment);
 
-                    // Create a StringContent object with the JSON payload
                     var content = new StringContent(jsonPayloadString, Encoding.UTF8, "application/json");
 
-                    // Make the POST request
                     HttpResponseMessage response = await httpClient.PostAsync(apiUrl, content);
 
-                    // Check if the request was successful
                     if (response.IsSuccessStatusCode)
                     {
-                        // Read the response content
                         string responseContent = await response.Content.ReadAsStringAsync();
                         return responseContent;
                     }
                     else
                     {
-                        // Request failed
                         return $"Error: {response.StatusCode} - {response.ReasonPhrase}";
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Handle any exceptions
                 return $"Error: {ex.Message}";
             }
         }
-        //string result = await SendFileAsJsonAsync("C:/Users/banki/OneDrive/Asztali gép/Programozás/CSHARP/torolheto/123.txt", "helo", "https://localhost:5000/files");
     }
 }   

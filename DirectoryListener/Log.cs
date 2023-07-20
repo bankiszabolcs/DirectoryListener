@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 namespace DirectoryListener
 {
-    internal class Log
+    internal class Log : INotifyPropertyChanged
     {
         public enum EventType { Created, Changed, Renamed, Deleted }
         public string Url { get; set; }
@@ -14,14 +11,37 @@ namespace DirectoryListener
         public EventType FileEvent { get; set; }
         public string User { get; set; }
         public DateTime EventTime { get; set; }
+        public bool isUploaded { get; set; }
 
-        public Log (EventType FileEvent, string url, string longUrl, string user)
+        private bool isIconVisible;
+        public bool IsIconVisible
+        {
+            get { return isIconVisible; }
+            set
+            {
+                if (isIconVisible != value)
+                {
+                    isIconVisible = value;
+                    OnPropertyChanged(nameof(IsIconVisible));
+                }
+            }
+        }
+
+        public Log (EventType FileEvent, string url, string longUrl, string user, bool isUploaded)
         {
             this.FileEvent = FileEvent;
             this.Url = url;
             this.longUrl = longUrl;
             this.User = user;
             this.EventTime = DateTime.Now;
+            this.isUploaded = isUploaded;
+            isIconVisible = isUploaded;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

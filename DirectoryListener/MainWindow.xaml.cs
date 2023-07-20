@@ -29,7 +29,6 @@ namespace DirectoryListener
             logContainer.ItemsSource = logCollection;
             logCollection.CollectionChanged += LogCollection_CollectionChanged;
             fileWatcher = new FileWatchManager();
-            
         }
 
         private void LogCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -119,6 +118,12 @@ namespace DirectoryListener
         {
             if(!String.IsNullOrEmpty(dirPath))
             {
+                if(extensions.Count < 1)
+                {
+                    MessageBox.Show("Legalább egy fájltípust jelölj ki", "Hiányzó kiterjesztés", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    cbContainer.Focus();
+                    return;
+                }
                 foreach (var ext in extensions)
                 {
                     fileWatcher.WatchFile(dirPath, ext);
