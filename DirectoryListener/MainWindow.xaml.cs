@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Net;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Interop;
@@ -28,6 +29,7 @@ namespace DirectoryListener
             logContainer.ItemsSource = logCollection;
             logCollection.CollectionChanged += LogCollection_CollectionChanged;
             fileWatcher = new FileWatchManager();
+            
         }
 
         private void LogCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -160,5 +162,6 @@ namespace DirectoryListener
                 MessageBox.Show(ex.ToString(), "Hiba", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }  
         }
+        
     }
 }
