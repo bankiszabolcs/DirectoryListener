@@ -13,7 +13,21 @@ amint a fájlok már nem íródnak - , egy http POST request-ben az ott találha
 - Megfigyelést leállíthatjuk, és újból újraindíthatjuk.
 - A figyelés eredményét 'txt' fájlba kimenthetjük.
 
-## Indítás
+## Alkalmazás indítása
+1. Forkolni kell az adott GitHub repository tartalmát:
+https://github.com/bankiszabolcs/DirectoryListener
+
+2.  A célgépre le kell klónozni az adott GitHub repository tartalmát.
+    Terminálba:
+    `git clone https://github.com/bankiszabolcs/DirectoryListener.git`
+
+3.  Futtatás
+   + Visual Studioból
+       - Projekt gyökerében nyitsd meg a DirectoryListener.sln fájlt
+       - Nyomd le az F5-öt
+   
+   + Windows Intézőből
+        - Projekt gyökerében lépj be a DirectoryListener > bin > Debug > net6.0 mappába és indítsd el a DirectoryListener.exe fájlt.
 
 ## Továbbfejlesztési lehetőségek:
 - Több megfigyelhető fájlformátum hozzáadása
