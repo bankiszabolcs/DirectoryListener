@@ -13,19 +13,59 @@ namespace DirectoryListener
         public DateTime EventTime { get; set; }
         public bool isUploaded { get; set; }
 
-        private bool isIconVisible;
-        public bool IsIconVisible
+        private bool isSuccessfulIcVisible;
+
+        private bool isFailedIcVisible;
+
+        public bool IsSuccessfulIcVisible
         {
-            get { return isIconVisible; }
+            get { return isUploaded; }
             set
             {
-                if (isIconVisible != value)
+                if (isUploaded != value)
                 {
-                    isIconVisible = value;
-                    OnPropertyChanged(nameof(IsIconVisible));
+                    OnPropertyChanged(nameof(IsSuccessfulIcVisible));
                 }
             }
         }
+
+        public bool IsFailedIcVisible
+        {
+            get { return !isUploaded; }
+            set
+            {
+                if (!isUploaded != value)
+                {
+                    OnPropertyChanged(nameof(IsFailedIcVisible));
+                }
+            }
+        }
+
+        /*        public bool IsSuccessfulIcVisible
+                {
+                    get { return isSuccessfulIcVisible; }
+                    set
+                    {
+                        if (isSuccessfulIcVisible != value)
+                        {
+                            isSuccessfulIcVisible = value;
+                            OnPropertyChanged(nameof(IsSuccessfulIcVisible));
+                        }
+                    }
+                }
+
+                public bool IsFailedIcVisible
+                {
+                    get { return isFailedIcVisible; }
+                    set
+                    {
+                        if (isFailedIcVisible != value)
+                        {
+                            isFailedIcVisible = value;
+                            OnPropertyChanged(nameof(IsFailedIcVisible));
+                        }
+                    }
+                }*/
 
         public Log (EventType FileEvent, string url, string longUrl, string user, bool isUploaded)
         {
@@ -35,7 +75,8 @@ namespace DirectoryListener
             this.User = user;
             this.EventTime = DateTime.Now;
             this.isUploaded = isUploaded;
-            isIconVisible = isUploaded;
+            //isSuccessfulIcVisible = isUploaded;
+            //isFailedIcVisible = !isUploaded;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

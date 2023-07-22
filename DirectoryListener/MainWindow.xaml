@@ -55,8 +55,8 @@
                         <TextBlock Grid.Column="1" Text="{Binding Url}"></TextBlock>
                         <TextBlock Grid.Column="2" Text="{Binding User}"></TextBlock>
                         <TextBlock Grid.Column="3" Text="{Binding EventTime}"></TextBlock>
-                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikeres" Grid.Column="4" Visibility="{Binding IsIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Check" Height="15" Width="15" Foreground="#FF008E30" IsEnabled="True" Margin="5,0,0,0" />
-                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikertelen" Grid.Column="4"  Visibility="{Binding !IsIconVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Ban" Height="15" Width="15" Foreground="#FF8C0202" Margin="5,0,0,0"  />
+                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikeres" Grid.Column="4" Visibility="{Binding IsSuccessfulIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Check" Height="15" Width="15" Foreground="#FF008E30" IsEnabled="True" Margin="5,0,0,0" />
+                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikertelen" Grid.Column="4"  Visibility="{Binding IsFailedIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Ban" Height="15" Width="15" Foreground="#FF8C0202" Margin="5,0,0,0"  />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Text;
@@ -17,7 +15,7 @@ namespace DirectoryListener
     internal class FileWatchManager
     {
         public FileSystemWatcher watcher;
-        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true), new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
+        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true), new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
         public static List<string> activitiesLog = new List<string>();
         string API_URL = "https://localhost:5000/files";
 
@@ -54,7 +52,7 @@ namespace DirectoryListener
             string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
             Console.WriteLine(result);
             Log actualLog = new Log(Log.EventType.Changed, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
-            activitiesLog.Add($"Changed: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}");
+            activitiesLog.Add($"Changed: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}. Uploaded to a server: {(actualLog.isUploaded? "Yes":"No") }");
             Application.Current.Dispatcher.Invoke(() =>
             {
                logCollection.Add(actualLog);
@@ -70,7 +68,7 @@ namespace DirectoryListener
             string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
             Console.WriteLine(result);
             Log actualLog = new Log(Log.EventType.Created, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
-            activitiesLog.Add($"Created: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime.ToString()}");
+            activitiesLog.Add($"Created: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime.ToString()} Uploaded to a server: {(actualLog.isUploaded ? "Yes" : "No")}");
             Application.Current.Dispatcher.Invoke(() =>
             {
                 logCollection.Add(actualLog);
@@ -80,10 +78,8 @@ namespace DirectoryListener
         private async void OnDeleted(object sender, FileSystemEventArgs e)
         {
             Console.WriteLine($"Deleted: {e.FullPath}");
-            string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
-            Console.WriteLine(result);
-            Log actualLog = new Log(Log.EventType.Deleted, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
-            activitiesLog.Add($"Deleted: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime}");
+            Log actualLog = new Log(Log.EventType.Deleted, e.Name, e.FullPath, Environment.UserName, false);
+            activitiesLog.Add($"Deleted: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime} Uploaded to a server: {(actualLog.isUploaded ? "Yes" : "No")}");
             Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
         }
 
@@ -95,7 +91,7 @@ namespace DirectoryListener
             string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
             Console.WriteLine(result);
             Log actualLog = new Log(Log.EventType.Renamed, e.Name, e.FullPath, Environment.UserName, !result.StartsWith("Error:"));
-            activitiesLog.Add($"Renamed: {e.OldFullPath} was renamed to {e.FullPath} by {actualLog.User} on {actualLog.EventTime}");
+            activitiesLog.Add($"Renamed: {e.OldFullPath} was renamed to {e.FullPath} by {actualLog.User} on {actualLog.EventTime} Uploaded to a server: {(actualLog.isUploaded ? "Yes" : "No")}");
             Application.Current.Dispatcher.Invoke(() => { logCollection.Add(actualLog); });
         }
 
