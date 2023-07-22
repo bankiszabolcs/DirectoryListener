@@ -41,32 +41,6 @@ namespace DirectoryListener
             }
         }
 
-        /*        public bool IsSuccessfulIcVisible
-                {
-                    get { return isSuccessfulIcVisible; }
-                    set
-                    {
-                        if (isSuccessfulIcVisible != value)
-                        {
-                            isSuccessfulIcVisible = value;
-                            OnPropertyChanged(nameof(IsSuccessfulIcVisible));
-                        }
-                    }
-                }
-
-                public bool IsFailedIcVisible
-                {
-                    get { return isFailedIcVisible; }
-                    set
-                    {
-                        if (isFailedIcVisible != value)
-                        {
-                            isFailedIcVisible = value;
-                            OnPropertyChanged(nameof(IsFailedIcVisible));
-                        }
-                    }
-                }*/
-
         public Log (EventType FileEvent, string url, string longUrl, string user, bool isUploaded)
         {
             this.FileEvent = FileEvent;
@@ -75,8 +49,6 @@ namespace DirectoryListener
             this.User = user;
             this.EventTime = DateTime.Now;
             this.isUploaded = isUploaded;
-            //isSuccessfulIcVisible = isUploaded;
-            //isFailedIcVisible = !isUploaded;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

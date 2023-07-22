@@ -15,9 +15,10 @@ namespace DirectoryListener
     internal class FileWatchManager
     {
         public FileSystemWatcher watcher;
-        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", true), new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
+        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "fdfds", "fwefewfew/gfdgfdgfdgfd/as.txt", "Szabi", true), new Log(Log.EventType.Changed, "fwefewfew/gfdgfdgfdgfd/as.txt.txt", "sdfdsfdsf", "Szabi", false) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
         public static List<string> activitiesLog = new List<string>();
         string API_URL = "https://localhost:5000/files";
+        private bool isWatching = false;
 
         public void WatchFile(string url, string format)
         {
@@ -41,10 +42,15 @@ namespace DirectoryListener
             watcher.Filter = $"*{format}";
             watcher.IncludeSubdirectories = true;
             watcher.EnableRaisingEvents = true;
+            isWatching = true;
         }
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
+    /*        if (!isWatching)
+            {
+                return;
+            }*/
+            if (e.ChangeType != WatcherChangeTypes.Changed || !isWatching)
             {
                 return;
             }
@@ -63,6 +69,9 @@ namespace DirectoryListener
 
         private async void OnCreated(object sender, FileSystemEventArgs e)
         {
+            if (!isWatching)
+                return;
+            
             string value = $"Created: {e.FullPath}";
             Console.WriteLine(value);
             string result = await SendFileAsJsonAsync(e.FullPath, e.Name, API_URL);
@@ -77,6 +86,8 @@ namespace DirectoryListener
 
         private async void OnDeleted(object sender, FileSystemEventArgs e)
         {
+            if (!isWatching)
+                return;
             Console.WriteLine($"Deleted: {e.FullPath}");
             Log actualLog = new Log(Log.EventType.Deleted, e.Name, e.FullPath, Environment.UserName, false);
             activitiesLog.Add($"Deleted: {actualLog.longUrl} by {actualLog.User} on {actualLog.EventTime} Uploaded to a server: {(actualLog.isUploaded ? "Yes" : "No")}");
@@ -85,6 +96,8 @@ namespace DirectoryListener
 
         private async void OnRenamed(object sender, RenamedEventArgs e)
         {
+            if (!isWatching)
+                return;
             Console.WriteLine($"Renamed:");
             Console.WriteLine($"    Old: {e.OldFullPath}");
             Console.WriteLine($"    New: {e.FullPath}");
@@ -115,6 +128,7 @@ namespace DirectoryListener
                 watcher.EnableRaisingEvents = false;
                 watcher.Dispose();
                 watcher = null;
+                isWatching = false;
             }
 
         }

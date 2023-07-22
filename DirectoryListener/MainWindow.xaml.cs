@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 using CheckBox = System.Windows.Controls.CheckBox;
@@ -9,9 +10,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace DirectoryListener
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+
     public partial class MainWindow : Window
     {
         private FileWatchManager fileWatcher;
@@ -122,6 +121,13 @@ namespace DirectoryListener
                     cbContainer.Focus();
                     return;
                 }
+                if (fileWatcher != null)
+                {
+                    fileWatcher.StopMonitor();
+                    fileWatcher = null;
+                }
+
+                fileWatcher = new FileWatchManager();
                 foreach (var ext in extensions)
                 {
                     fileWatcher.WatchFile(dirPath, ext);
@@ -139,21 +145,19 @@ namespace DirectoryListener
             }
         }
 
-        private void StopMonitor(object sender, RoutedEventArgs e)
+        private async void StopMonitor(object sender, RoutedEventArgs e)
         {
             Spinner.Visibility = Visibility.Hidden;
             startButton.IsEnabled = true;
             stopButton.IsEnabled = false;
-            //FileWatchManager.watcher.EnableRaisingEvents = false;
        
             fileWatcher.StopMonitor();
-            fileWatcher = null; // Set it to null to indicate it's no longer active
-            
+            fileWatcher = null;
+
         }
 
         private void SaveLog_Click(object sender, RoutedEventArgs e)
         {
-
             try
             {
                 string urlToSave = BrowseDir("Válaszd ki hova szeretnéd menteni a naplófájlt");
