@@ -2,6 +2,9 @@
 Az alkalmazás Windows környezetben képes a lokális fájlrendszer egy megadott könyvtárának tartalmát figyelni, annak változása esetén – 
 amint a fájlok már nem íródnak - , egy http POST request-ben az ott található fájlok közül a kiválasztási szempontoknak megfelelőt egy szerverre feltölteni.)
 
+> Az alkalmazást egy a GitHubon publikosan hozzáférhető fájlszerverrel teszteltem ( ` https://github.com/rafaelfgx/StorageService.git ` ) 
+> Az POST kérés ennek megfelelően lett megírva és a URI cím ennek megfelelően lett az alkalmazásba "bele égetve".
+
 ## Leírás
 - Megadhatjuk, hogy mely mappa tartalmát figyelje. 
 - Az alkalmazás jelzi ha egy fájlt módosítottak, töröltek, átneveztek vagy újat hoztak létre. 
