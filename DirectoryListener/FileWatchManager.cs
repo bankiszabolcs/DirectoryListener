@@ -15,7 +15,7 @@ namespace DirectoryListener
     internal class FileWatchManager
     {
         public FileSystemWatcher watcher;
-        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); //{new Log(Log.EventType.Changed, "fdfds", "fwefewfew/gfdgfdgfdgfd/as.txt", "Szabi", true), new Log(Log.EventType.Changed, "fwefewfew/gfdgfdgfdgfd/as.txt.txt", "sdfdsfdsf", "Szabi", false) , new Log(Log.EventType.Changed, "as.txt", "sdfdsfdsf", "Szabi", false) };
+        public static ObservableCollection<Log> logCollection = new ObservableCollection<Log>(); 
         public static List<string> activitiesLog = new List<string>();
         string API_URL = "https://localhost:5000/files";
         private bool isWatching = false;
@@ -46,10 +46,6 @@ namespace DirectoryListener
         }
         private async void OnChanged(object sender, FileSystemEventArgs e)
         {
-    /*        if (!isWatching)
-            {
-                return;
-            }*/
             if (e.ChangeType != WatcherChangeTypes.Changed || !isWatching)
             {
                 return;
@@ -84,7 +80,7 @@ namespace DirectoryListener
             });
         }
 
-        private async void OnDeleted(object sender, FileSystemEventArgs e)
+        private void OnDeleted(object sender, FileSystemEventArgs e)
         {
             if (!isWatching)
                 return;

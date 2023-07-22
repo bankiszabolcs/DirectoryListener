@@ -40,27 +40,26 @@
             </StackPanel>
         </StackPanel>
         <fa:ImageAwesome x:Name="Spinner" Visibility="Hidden" Spin="True" Icon="Search" Height="30" Width="30" Foreground="#FF12616B" />
-        <ListBox Name="logContainer" Height="180" Width="400" VerticalAlignment="Center" HorizontalContentAlignment="Stretch">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid Margin="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="2*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="*"></ColumnDefinition>
-                            <ColumnDefinition Width="auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{Binding FileEvent}" Padding="2,0,2,0" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Column="1" Text="{Binding Url}" Padding="2,0,2,0" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Column="2" Text="{Binding User}" Padding="2,0,2,0" VerticalAlignment="Center"></TextBlock>
-                        <TextBlock Grid.Column="3" Text="{Binding EventTime}" Padding="2,0,2,0" VerticalAlignment="Center"></TextBlock>
-                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikeres" Grid.Column="4" Visibility="{Binding IsSuccessfulIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Check" Height="15" Width="15" Foreground="#FF008E30" IsEnabled="True" Margin="5,0,0,0" />
-                        <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikertelen" Grid.Column="4"  Visibility="{Binding IsFailedIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Ban" Height="15" Width="15" Foreground="#FF8C0202" Margin="5,0,0,0"  />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <DataGrid Name="logContainer" Height="180" Width="400" AutoGenerateColumns="False" VerticalAlignment="Center" HorizontalAlignment="Stretch" GridLinesVisibility="None" Background="{x:Null}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="*" Header="File Event" Binding="{Binding FileEvent}" />
+                    <DataGridTextColumn Width="2*" Header="Url" Binding="{Binding Url}" />
+                    <DataGridTextColumn Width="*" Header="User" Binding="{Binding User}" />
+                    <DataGridTextColumn Width="*" Header="Event Time" Binding="{Binding EventTime}" />
+                    <DataGridTemplateColumn Width="auto" Header="Status">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikeres" Grid.Column="4" Visibility="{Binding IsSuccessfulIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Check" Height="15" Width="15" Foreground="#FF008E30" IsEnabled="True" Margin="5,0,0,0" />
+                                    <fa:ImageAwesome ToolTip="Fájl elküldése a szerverre sikertelen" Grid.Column="4"  Visibility="{Binding IsFailedIcVisible, Converter={StaticResource BooleanToVisibilityConverter}}" Icon="Ban" Height="15" Width="15" Foreground="#FF8C0202" Margin="5,0,0,0"  />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
         <Button Content="Naplózás mentése" Style="{StaticResource CustomButtonStyle}"  Width="140" Margin="10,15,10,3" Background="#FF12616B" Foreground="White" VerticalAlignment="Center" Click="SaveLog_Click" Height="20"/>
     </StackPanel>
 </Window>
